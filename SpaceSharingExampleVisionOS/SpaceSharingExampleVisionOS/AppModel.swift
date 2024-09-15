@@ -18,4 +18,16 @@ class AppModel {
         case open
     }
     var immersiveSpaceState = ImmersiveSpaceState.closed
+
+    private(set) var isDragging = false
+    private(set) var dragStartPosition: SIMD3<Float> = .zero
+
+    func startDrag(at position: SIMD3<Float>) {
+        isDragging = true
+        dragStartPosition = position
+    }
+
+    func endDrag() {
+        isDragging = false
+    }
 }
