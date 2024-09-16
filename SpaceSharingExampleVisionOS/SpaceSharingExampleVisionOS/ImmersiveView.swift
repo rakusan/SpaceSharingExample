@@ -8,15 +8,20 @@
 import SwiftUI
 import RealityKit
 import RealityKitContent
+import ARKit
 
 struct ImmersiveView: View {
 
     @Environment(AppModel.self) private var appModel
 
+    private let arkitSession = ARKitSession()
+    @State private var qrScanningTask: Task<Void, Never>?
+
     var body: some View {
         RealityView { content in
             if let immersiveContentEntity = try? await Entity(named: "Immersive", in: realityKitContentBundle) {
                 content.add(immersiveContentEntity)
+                appModel.immersiveContentEntity = immersiveContentEntity
             }
         }
         .gesture(
@@ -36,6 +41,41 @@ struct ImmersiveView: View {
                     appModel.endDrag()
                 }
         )
+        .onChange(of: appModel.isScanningQRs) {
+            if (appModel.isScanningQRs) {
+                startQRScanning()
+            } else {
+                endQRScanning()
+            }
+        }
+    }
+
+    private func startQRScanning() {
+        qrScanningTask = Task {
+            await arkitSession.queryAuthorization(for: [.worldSensing])
+            let barcodeDetection = BarcodeDetectionProvider(symbologies: [.qr])
+            do {
+                try await arkitSession.run([barcodeDetection])
+            } catch {
+                return
+            }
+            for await anchorUpdate in barcodeDetection.anchorUpdates {
+                let anchor = anchorUpdate.anchor
+                guard let name = anchor.payloadString else { continue }
+                switch anchorUpdate.event {
+                case .added:
+                    appModel.qrEntered(name: name, matrix: anchor.originFromAnchorTransform, extent: anchor.extent)
+                case .updated:
+                    appModel.qrUpdated(name: name, matrix: anchor.originFromAnchorTransform, extent: anchor.extent)
+                case .removed:
+                    appModel.qrLeaved(name: name)
+                }
+            }
+        }
+    }
+
+    private func endQRScanning() {
+        qrScanningTask?.cancel()
     }
 }
 
