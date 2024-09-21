@@ -7,8 +7,8 @@
 
 def Xform "Root"
 {
-    reorder nameChildren = ["Sphere_Left", "GridMaterial", "QR_Frame"]
-    def Sphere "Sphere_Left" (
+    reorder nameChildren = ["Sphere", "GridMaterial", "QR_Frame", "QR_Frame_G1", "QR_Frame_G2"]
+    def Sphere "Sphere" (
         active = true
         prepend apiSchemas = ["MaterialBindingAPI"]
     )
@@ -83,6 +83,29 @@ def Xform "Root"
                 float inputs:opacity = 0.3
                 float inputs:roughness = 0.75
                 token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "InputTarget"
+        {
+            uniform token info:id = "RealityKit.InputTarget"
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (1.2, 1.2, 1.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
             }
         }
     }
