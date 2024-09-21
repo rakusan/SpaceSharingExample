@@ -42,8 +42,8 @@ class AppModel {
     }
 
     func reset() {
-        isScanningQRs = false
         qrRemoveAll()
+        isScanningQRs = false
     }
 
     func qrUpdated(name: String, transform: simd_float4x4, extent: simd_float3) {
