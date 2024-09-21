@@ -30,7 +30,7 @@ class AppModel {
 
     private(set) var isScanningQRs = false {
         didSet {
-            sendToPeer(force: true)
+            sendSpaceSharingData(force: true)
         }
     }
 
@@ -43,11 +43,11 @@ class AppModel {
 
     var shperePosition: simd_float3 = .zero {
         didSet {
-            sendToPeer(force: false)
+            sendSpaceSharingData(force: false)
         }
     }
 
-    private var sending = false
+    private var sendingTask: URLSessionDataTask?
 
     func startScanningQRs() {
         isScanningQRs = true
@@ -115,16 +115,45 @@ class AppModel {
 
     func endDrag() {
         isDragging = false
-        sendToPeer(force: true)
+        sendSpaceSharingData(force: true)
     }
 
-    private func sendToPeer(force: Bool) {
+    private func sendSpaceSharingData(force: Bool) {
         if (isScanningQRs || qrCount < 2) {
             return
         }
-        if (sending && !force) {
+
+        if (sendingTask?.state == .running && !force) {
             return
         }
+        sendingTask?.cancel()
+        sendingTask = nil
+
+        let spaceSharingData = SpaceSharingData(
+            qrPositions: qrPositions,
+            spherePosition: shperePosition
+        )
+
+        // This is an example URL, replace it with your valid URL.
+        var request = URLRequest(url: URL(string:"http://www.example.com/")!)
+        request.httpMethod = "PUT"
+
+        let encoder = JSONEncoder()
+        request.httpBody = try! encoder.encode(spaceSharingData)
+
+        sendingTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error{
+                print(error.localizedDescription)
+                return
+            }
+            if let response = response as? HTTPURLResponse {
+                print("response.statusCode = \(response.statusCode)")
+            }
+            Task {
+                try await Task.sleep(nanoseconds: 500000000)  // 0.5sec
+            }
+        }
+        sendingTask?.resume()
     }
 }
 
@@ -133,7 +162,7 @@ struct NamedPosition: Codable {
     let position: simd_float3
 }
 
-struct Message: Codable {
+struct SpaceSharingData: Codable {
     let qrPositions: [NamedPosition]
     let spherePosition: simd_float3
 }
