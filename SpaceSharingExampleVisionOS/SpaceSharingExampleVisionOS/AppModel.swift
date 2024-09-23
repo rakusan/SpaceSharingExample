@@ -41,7 +41,7 @@ class AppModel {
     private(set) var isDragging = false
     private(set) var dragStartPosition: SIMD3<Float> = .zero
 
-    var shperePosition: simd_float3 = .zero {
+    var spherePosition: simd_float3 = .zero {
         didSet {
             sendSpaceSharingData(force: false)
         }
@@ -131,7 +131,7 @@ class AppModel {
 
         let spaceSharingData = SpaceSharingData(
             qrPositions: qrPositions,
-            spherePosition: shperePosition
+            spherePosition: spherePosition
         )
 
         // This is an example URL, replace it with your valid URL.

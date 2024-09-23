@@ -23,7 +23,7 @@ struct ImmersiveView: View {
                 content.add(immersiveContentEntity)
                 appModel.immersiveContentEntity = immersiveContentEntity
                 if let sphere = immersiveContentEntity.findEntity(named: "Sphere") {
-                    appModel.shperePosition = sphere.position(relativeTo: nil)
+                    appModel.spherePosition = sphere.position(relativeTo: nil)
                 }
             }
         }
@@ -38,7 +38,7 @@ struct ImmersiveView: View {
                         let tr3D = value.convert(value.gestureValue.translation3D, from: .local, to: .scene)
                         let offset = SIMD3<Float>(x: Float(tr3D.x), y: Float(tr3D.y), z: Float(tr3D.z))
                         entity.setPosition(appModel.dragStartPosition + offset, relativeTo: nil)
-                        appModel.shperePosition = entity.position(relativeTo: nil)
+                        appModel.spherePosition = entity.position(relativeTo: nil)
                     }
                 }
                 .onEnded { value in

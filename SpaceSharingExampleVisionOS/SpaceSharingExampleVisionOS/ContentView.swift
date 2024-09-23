@@ -15,6 +15,10 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
+            ToggleImmersiveSpaceButton()
+
+            Spacer().frame(height: 50)
+
             Button("scan QRs") {
                 appModel.startScanningQRs()
             }
@@ -26,17 +30,13 @@ struct ContentView: View {
             .disabled(appModel.immersiveSpaceState != .open)
 
             Text(qrCountText)
-
-            Spacer().frame(height: 50)
-
-            ToggleImmersiveSpaceButton()
         }
         .padding()
     }
 
     private var qrCountText: String {
         if (appModel.immersiveSpaceState != .open) {
-            ""
+            " "
         } else {
             switch appModel.qrCount {
             case 0: "QRコードを2つスキャンしてください"
