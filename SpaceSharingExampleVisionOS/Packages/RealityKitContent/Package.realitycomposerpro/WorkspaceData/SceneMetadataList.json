@@ -11,6 +11,18 @@
       }
     ]
   },
+  "19FBBD8A-B373-4651-83A2-93F622B99500" : {
+    "objectMetadataList" : [
+      [
+        "19FBBD8A-B373-4651-83A2-93F622B99500",
+        "Root"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      }
+    ]
+  },
   "53559712-8C65-4958-9D86-383275A68095" : {
     "objectMetadataList" : [
       [
@@ -96,7 +108,7 @@
       [
         "AF09ED6F-1707-48FD-8720-65B998362C09",
         "Root",
-        "Sphere"
+        "Transform"
       ],
       {
         "isExpanded" : true,

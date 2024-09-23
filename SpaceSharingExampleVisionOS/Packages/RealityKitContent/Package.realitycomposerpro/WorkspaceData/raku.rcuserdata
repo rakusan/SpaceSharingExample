@@ -2,7 +2,8 @@
   "advancedEditorSelectedIdentifier" : "ProjectBrowser",
   "openSceneRelativePaths" : [
     "Immersive.usda",
-    "Scene.usda"
+    "Scene.usda",
+    "Materials\/GridMaterial.usda"
   ],
   "recentIdentifiers" : {
     "53559712-8C65-4958-9D86-383275A68095" : [
