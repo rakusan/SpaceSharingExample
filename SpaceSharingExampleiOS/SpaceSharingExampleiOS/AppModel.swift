@@ -123,7 +123,9 @@ class AppModel {
         guard let sphereEntity, let parent = sphereEntity.parent else { return }
         sphereEntity.setPosition(spaceSharingData.spherePosition, relativeTo: parent)
 
-        let orientation = simd_quatf(from: ssQR1.position - ssQR2.position, to: myQR1.position - myQR2.position)
+        let myQRVec = myQR1.position - myQR2.position
+        let ssQRVec = ssQR1.position - ssQR2.position
+        let orientation = simd_quatf(from: simd_float3(ssQRVec.x, 0, ssQRVec.z), to: simd_float3(myQRVec.x, 0, myQRVec.z))
         parent.setOrientation(orientation, relativeTo: nil)
         parent.setPosition(myQR1.position - normalize(simd_act(orientation, ssQR1.position)) * length(ssQR1.position), relativeTo: nil)
     }
