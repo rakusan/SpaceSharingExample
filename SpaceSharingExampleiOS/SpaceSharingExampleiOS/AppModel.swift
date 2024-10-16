@@ -121,7 +121,7 @@ class AppModel {
         guard let ssQR2 = spaceSharingData.qrPositions.first(where: { $0.name == myQR2.name }) else { return }
 
         guard let sphereEntity, let parent = sphereEntity.parent else { return }
-        sphereEntity.setPosition(spaceSharingData.spherePosition, relativeTo: parent)
+        sphereEntity.setTransformMatrix(spaceSharingData.sphereTransform, relativeTo: parent)
 
         let myQRVec = myQR1.position - myQR2.position
         let ssQRVec = ssQR1.position - ssQR2.position
@@ -138,5 +138,9 @@ struct NamedPosition: Codable {
 
 struct SpaceSharingData: Codable {
     let qrPositions: [NamedPosition]
-    let spherePosition: simd_float3
+    let sphereTransformColumns: [simd_float4]
+
+    var sphereTransform: simd_float4x4 {
+        simd_float4x4(sphereTransformColumns[0], sphereTransformColumns[1], sphereTransformColumns[2], sphereTransformColumns[3])
+    }
 }

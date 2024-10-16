@@ -39,9 +39,12 @@ class AppModel {
     var qrCount: Int { qrPositions.count }
 
     private(set) var isDragging = false
-    private(set) var dragStartPosition: SIMD3<Float> = .zero
+    private(set) var dragStartPosition = SIMD3<Float>.zero
 
-    var spherePosition: simd_float3 = .zero {
+    private(set) var isRotating = false
+    private(set) var rotateStartOrientation = Rotation3D.identity
+
+    var sphereTransform: simd_float4x4 = matrix_identity_float4x4 {
         didSet {
             sendSpaceSharingData(force: false)
         }
@@ -118,6 +121,16 @@ class AppModel {
         sendSpaceSharingData(force: true)
     }
 
+    func startRotate(from orientation: simd_quatf) {
+        isRotating = true
+        rotateStartOrientation = .init(orientation)
+    }
+
+    func endRotate() {
+        isRotating = false
+        sendSpaceSharingData(force: true)
+    }
+
     private func sendSpaceSharingData(force: Bool) {
         if (isScanningQRs || qrCount < 2) {
             return
@@ -131,7 +144,7 @@ class AppModel {
 
         let spaceSharingData = SpaceSharingData(
             qrPositions: qrPositions,
-            spherePosition: spherePosition
+            sphereTransform: sphereTransform
         )
 
         // This is an example URL, replace it with your valid URL.
@@ -164,5 +177,10 @@ struct NamedPosition: Codable {
 
 struct SpaceSharingData: Codable {
     let qrPositions: [NamedPosition]
-    let spherePosition: simd_float3
+    let sphereTransformColumns: [simd_float4]
+
+    init(qrPositions: [NamedPosition], sphereTransform m: simd_float4x4) {
+        self.qrPositions = qrPositions
+        self.sphereTransformColumns = [m.columns.0, m.columns.1, m.columns.2, m.columns.3]
+    }
 }

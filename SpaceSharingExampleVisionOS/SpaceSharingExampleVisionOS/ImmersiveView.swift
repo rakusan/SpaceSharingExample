@@ -23,7 +23,7 @@ struct ImmersiveView: View {
                 content.add(immersiveContentEntity)
                 appModel.immersiveContentEntity = immersiveContentEntity
                 if let sphere = immersiveContentEntity.findEntity(named: "Sphere") {
-                    appModel.spherePosition = sphere.position(relativeTo: nil)
+                    appModel.sphereTransform = sphere.transformMatrix(relativeTo: nil)
                 }
             }
         }
@@ -38,12 +38,36 @@ struct ImmersiveView: View {
                         let tr3D = value.convert(value.gestureValue.translation3D, from: .local, to: .scene)
                         let offset = SIMD3<Float>(x: Float(tr3D.x), y: Float(tr3D.y), z: Float(tr3D.z))
                         entity.setPosition(appModel.dragStartPosition + offset, relativeTo: nil)
-                        appModel.spherePosition = entity.position(relativeTo: nil)
+                        appModel.sphereTransform = entity.transformMatrix(relativeTo: nil)
                     }
                 }
                 .onEnded { value in
                     if (value.entity.name == "Sphere") {
                         appModel.endDrag()
+                    }
+                }
+        )
+        .gesture(
+            RotateGesture3D().targetedToAnyEntity()
+                .onChanged { value in
+                    let entity = value.entity
+                    if (entity.name == "Sphere") {
+                        if !appModel.isRotating {
+                            appModel.startRotate(from: entity.orientation(relativeTo: nil))
+                        }
+                        let rotation = value.rotation
+                        let flippedRotation = Rotation3D(angle: rotation.angle,
+                                                         axis: RotationAxis3D(x: -rotation.axis.x,
+                                                                              y: rotation.axis.y,
+                                                                              z: -rotation.axis.z))
+                        let newOrientation = appModel.rotateStartOrientation.rotated(by: flippedRotation)
+                        entity.setOrientation(.init(newOrientation), relativeTo: nil)
+                        appModel.sphereTransform = entity.transformMatrix(relativeTo: nil)
+                    }
+                }
+                .onEnded { value in
+                    if (value.entity.name == "Sphere") {
+                        appModel.endRotate()
                     }
                 }
         )

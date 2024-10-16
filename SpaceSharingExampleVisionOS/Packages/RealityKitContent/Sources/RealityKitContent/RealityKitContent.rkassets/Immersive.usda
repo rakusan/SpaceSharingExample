@@ -83,6 +83,7 @@ def Xform "Root"
             prepend apiSchemas = ["MaterialBindingAPI"]
         )
         {
+            reorder nameChildren = ["InputTarget", "Collider", "Cube"]
             rel material:binding = </Root/GridMaterial/GridMaterial> (
                 bindMaterialAs = "weakerThanDescendants"
             )
@@ -112,6 +113,32 @@ def Xform "Root"
 
                     def RealityKitStruct "pose"
                     {
+                    }
+                }
+            }
+
+            def Cube "Cube" (
+                active = true
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </Root/Transform/Sphere/Cube/DefaultMaterial>
+                double size = 0.2
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (0.3, 0.3, 0.3)
+                float3 xformOp:translate = (0.1, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def Material "DefaultMaterial"
+                {
+                    token outputs:surface.connect = </Root/Transform/Sphere/Cube/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+                    def Shader "DefaultSurfaceShader"
+                    {
+                        uniform token info:id = "UsdPreviewSurface"
+                        color3f inputs:diffuseColor = (1, 1, 1)
+                        float inputs:roughness = 0.75
+                        token outputs:surface
                     }
                 }
             }
