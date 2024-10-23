@@ -41,6 +41,9 @@ class AppModel {
     private(set) var isDragging = false
     private(set) var dragStartPosition = SIMD3<Float>.zero
 
+    private(set) var isScaling = false
+    private(set) var startScale = SIMD3<Float>.one
+
     private(set) var isRotating = false
     private(set) var rotateStartOrientation = Rotation3D.identity
 
@@ -118,6 +121,16 @@ class AppModel {
 
     func endDrag() {
         isDragging = false
+        sendSpaceSharingData(force: true)
+    }
+
+    func startScale(from scale: SIMD3<Float>) {
+        isScaling = true
+        startScale = scale
+    }
+
+    func endScale() {
+        isScaling = false
         sendSpaceSharingData(force: true)
     }
 

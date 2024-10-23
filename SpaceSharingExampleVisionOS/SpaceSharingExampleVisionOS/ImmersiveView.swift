@@ -48,6 +48,25 @@ struct ImmersiveView: View {
                 }
         )
         .simultaneousGesture(
+            MagnifyGesture().targetedToAnyEntity()
+                .onChanged { value in
+                    let entity = value.entity
+                    if (entity.name == "Sphere") {
+                        if (!appModel.isScaling) {
+                            appModel.startScale(from: entity.scale(relativeTo: nil))
+                        }
+                        let magnification = Float(value.magnification)
+                        entity.setScale(appModel.startScale * magnification, relativeTo: nil)
+                        appModel.sphereTransform = entity.transformMatrix(relativeTo: nil)
+                    }
+                }
+                .onEnded { value in
+                    if (value.entity.name == "Sphere") {
+                        appModel.endScale()
+                    }
+                }
+        )
+        .simultaneousGesture(
             RotateGesture3D().targetedToAnyEntity()
                 .onChanged { value in
                     let entity = value.entity
