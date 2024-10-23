@@ -27,7 +27,7 @@ struct ImmersiveView: View {
                 }
             }
         }
-        .gesture(
+        .simultaneousGesture(
             DragGesture().targetedToAnyEntity()
                 .onChanged { value in
                     let entity = value.entity
@@ -47,7 +47,7 @@ struct ImmersiveView: View {
                     }
                 }
         )
-        .gesture(
+        .simultaneousGesture(
             RotateGesture3D().targetedToAnyEntity()
                 .onChanged { value in
                     let entity = value.entity
